@@ -22,11 +22,17 @@ npm 地址 https://www.npmjs.com/package/htadmin-form
 
 #### 使用说明
 
-引入(基础) // main.js
+`import Vue from 'vue';
+import ElementUI from 'element-ui';
+import 'element-ui/lib/theme-chalk/index.css';
+import App from './App.vue';
 
-import HtAdmin from 'htadmin-form';
+Vue.use(ElementUI);
 
-Vue.use(HtAdmin);
+new Vue({
+  el: '#app',
+  render: h => h(App)
+});`
 
 #### 表单：
 
