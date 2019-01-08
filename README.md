@@ -21,18 +21,33 @@ npm 地址 https://www.npmjs.com/package/htadmin-form
 
 
 #### 使用说明
+在mian.js中写入以下内容
 
-`import Vue from 'vue';
-import ElementUI from 'element-ui';
-import 'element-ui/lib/theme-chalk/index.css';
-import App from './App.vue';
+`import Vue from 'vue';`
 
-Vue.use(ElementUI);
+`import ElementUI from 'element-ui';
+`
 
-new Vue({
-  el: '#app',
-  render: h => h(App)
-});`
+`import 'element-ui/lib/theme-chalk/index.css';`
+
+`import App from './App.vue';
+`
+
+`import HtAdmin from 'htadmin-form';
+`
+
+`Vue.use(HtAdmin);
+`
+
+`Vue.use(ElementUI);
+`
+
+`new Vue({
+   el: '#app',
+   render: h => h(App)
+ });
+ `
+
 
 #### 表单：
 
@@ -130,4 +145,4 @@ import {Input} from "htadmin-form";
 | ... | more | 更多参考element-ui   | ... |
 
 
-#### DEMO请看移步 [DEMO](https://github.com/hyw123456/admin-component-demo)
+####  [DEMO点击这里](https://github.com/hyw123456/admin-component-demo)
