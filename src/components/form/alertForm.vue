@@ -18,13 +18,14 @@
         },
         data: function () {
             return {
-                resolve: null,
-                reject: null,
-                id: ''
+                id: '',
+                handles: {},
+                beforeClose: null
             }
         },
         methods: {
             openAlert: function (init, config = {}) {
+
                 // console.log(this.$slots);
                 this.id = generateUUID();
                 const h = this.$createElement;
@@ -34,46 +35,52 @@
                         slot: i
                     }, this.$slots[i]))
                 }
-                return new Promise((resolve, reject) => {
-                    this.resolve = resolve;
-                    this.reject = reject;
-                    this.$msgbox({
-                        title: '',
-                        message: (<elm-form ref={this.id} key={this.id} formConfig={config} config={this.config} labelWidth={config.labelWidth || '80px'}
-                                            on-form-submit={this.submit} on-form-cancel={this.cancel} scopedSlots={this.$scopedSlots}>{slots}</elm-form>),
-
-                        confirmButtonText: '确定',
-                        cancelButtonText: '取消',
-
-                        beforeClose: (action, instance, done) => {
-                            done();
-                            this.reject();
-                        },
-                        closeOnClickModal: false,
-                        ...config,
-                        showCancelButton: false,
-                        showConfirmButton: false,
-                    });
-                    if (init) {
-                        this.$nextTick(() => {
-                            this.$refs[this.id].resetFormData(init);
-                        })
+                let formConfig = {...config, showConfirmButton: false, showCancelButton: false};
+                let self = this;
+                this.beforeClose = config.beforeClose;
+                let all = function (action, instance, done) {
+                    self.handles = {
+                        action, instance, done
                     }
+                    if (action === 'confirm') {
+                        self.$refs[self.id].submit();
+                    } else {
+                        self.$refs[self.id].cancel();
+                    }
+                };
+                config.beforeClose = all;
+                this.$msgbox({
+                    title: '',
+                    message: (<elm-form ref={this.id} key={this.id} formConfig={formConfig} config={this.config}
+                labelWidth={config.labelWidth || '80px'}
+                on-form-submit={this.submit} on-form-cancel={this.cancel}
+                scopedSlots={this.$scopedSlots}>{slots}</elm-form>),
 
-                })
+                confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    closeOnClickModal: false,
+                    showCancelButton: true,
+            ...config,
+            });
+                if (init) {
+                    this.$nextTick(() => {
+                        this.$refs[this.id].resetFormData(init);
+                    })
+                }
 
 
             },
             submit: function (e) {
-                console.log(this.$refs[this.id]);
-                this.resolve({
-                    form: e,
-                    close: this.$msgbox.close
-                });
+                this.beforeClose && this.beforeClose(this.handles.action,this.handles.instance, this.handles.done, e);
+                this.handles = null;
             },
             cancel: function () {
-                this.reject();
-                this.$msgbox.close()
+                if(this.beforeClose){
+                    this.beforeClose(this.handles.action,this.handles.instance, this.handles.done);
+                }else{
+                    this.handles.done();
+                }
+                this.handles = null;
             }
         }
     }
