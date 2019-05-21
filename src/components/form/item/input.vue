@@ -1,6 +1,6 @@
 <template>
     <el-form-item :label="itemData.label" :prop="itemData.key">
-        <el-input v-model="formData[itemData.key]" :type="itemData.inputType" :placeholder="itemData.placeholder"></el-input>
+        <el-input v-model="formData[itemData.key]" :type="itemData.inputType" :placeholder="itemData.placeholder" :rows="itemData.rows" :disabled="itemData.disabled"></el-input>
     </el-form-item>
 </template>
 

@@ -1,7 +1,7 @@
 {
   "name": "htadmin-form",
   "private": false,
-  "version": "1.0.0",
+  "version": "1.0.6",
   "description": "内部项目,根据数据自动生成表单及表单弹窗",
   "main": "index.js",
   "scripts": {

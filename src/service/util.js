@@ -13,7 +13,7 @@ export function generateUUID() {
  * @param file 文件流
  * @returns {Promise<any>}
  */
-export async function uploadImg(file, url) {
+export async function uploadImg(file, url,fileKey='file') {
     let data;
     if (file.size > 1024 * 512) {
         data = await fileResizetoFile(file, .7, file.type);
@@ -33,7 +33,7 @@ export async function uploadImg(file, url) {
                 if (xmlhttp.status == 200) {// 200 = OK
 
                     let res = JSON.parse(xmlhttp.response);
-                    resolve(res.url);
+                    resolve(res.data);
                 }
                 else {
                     reject();
@@ -41,7 +41,7 @@ export async function uploadImg(file, url) {
             }
         };
         let form = new FormData(); // FormData 对象
-        form.append("uploadFile", data); // 文件对象
+        form.append(fileKey, data); // 文件对象
         xmlhttp.open("POST", process.env.VUE_APP_BASE_API + url, true);
         xmlhttp.send(form);
 

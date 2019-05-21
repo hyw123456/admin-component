@@ -1,5 +1,17 @@
 <template>
     <el-form-item :label="itemData.label">
+        <div v-if="itemData.one">
+           <el-upload
+                   class="avatar-uploader"
+                   :show-file-list="false"
+                    action="https://jsonplaceholder.typicode.com/posts/"
+                   :http-request="myUploadImg"
+                   :before-upload="beforeAvatarUpload">
+               <img v-if="imageUrl" :src="imageUrl" class="avatar">
+               <i v-else class="el-icon-plus avatar-uploader-icon"></i>
+           </el-upload>
+        </div>
+        <div  v-else>
             <el-upload
                     class="avatar-uploader"
                     action="https://jsonplaceholder.typicode.com/posts/"
@@ -12,9 +24,10 @@
                     :before-upload="beforeAvatarUpload">
                 <i class="el-icon-plus"></i>
             </el-upload>
-        <el-dialog :visible.sync="dialogVisible">
-            <img width="100%" :src="dialogImageUrl" alt="">
-        </el-dialog>
+            <el-dialog :visible.sync="dialogVisible">
+                <img width="100%" :src="dialogImageUrl" alt="">
+            </el-dialog>
+        </div>
     </el-form-item>
 </template>
 
@@ -31,38 +44,40 @@
                 type: Object
             }
         },
-        created: function(){
-            if(this.formData[this.itemData.key]&&this.formData[this.itemData.key].length){
-                this.fileList = this.formData[this.itemData.key].map(i=> {
-                    return {url: i,key:1}
-                });
+        computed:{
+            fileList(){
+                if(this.formData[this.itemData.key]&&this.formData[this.itemData.key].length){
+                    return this.formData[this.itemData.key].slice()
+                }
+                return []
+            },
+            imageUrl:{
+                get(){
+                    return this.formData[this.itemData.key]?this.formData[this.itemData.key].url:''
+                },
+                set(val){
+                    //this.formData[this.itemData.key].url=val
+                }
             }
+        },
+        created: function(){
         },
         data: function () {
             return {
                 dialogVisible: false,
                 dialogImageUrl: '',
-                fileList: []
+               // fileList: [],
+               // imageUrl:""
             }
         },
-
         methods: {
-            handleAvatarSuccess: function(a, file) {
-                return;
-                let res = URL.createObjectURL(file.raw);
-                if(this.formData[this.itemData.key] instanceof Array){
-                    this.formData[this.itemData.key].push(res);
-                }else{
-                    this.formData[this.itemData.key] = [res];
-                }
-
-                console.log(1);
-                console.log(this.fileList);
-            },
             handleRemove(file, fileList) {
-                this.formData[this.itemData.key] = fileList.map( i=> {
-                    return i.url;
-                })
+                let current=this.formData[this.itemData.key].find(item=>item.uid===file.uid)
+                if(current){
+                    this.$nextTick(()=>{
+                        this.formData[this.itemData.key].splice(this.formData[this.itemData.key].indexOf(current),1)
+                    })
+                }
             },
             handlePictureCardPreview(file) {
                 this.dialogImageUrl = file.url;
@@ -79,20 +94,26 @@
                 return  !(limitSize);
             },
             myUploadImg:async function (file) {
-                const res = await uploadImg(file.file, this.itemData.url);
-                if(this.formData[this.itemData.key] instanceof Array){
-                    this.formData[this.itemData.key].push(res);
-                }else{
-                    this.formData[this.itemData.key] = [res];
+                const res = await uploadImg(file.file, this.itemData.url,this.itemData.fileKey);
+                res.uid=file.file.uid
+                if(this.itemData.one){
+                    this.imageUrl = res.url
+                    this.formData[this.itemData.key]=res
                 }
-
-            }
+                else{
+                    if(this.formData[this.itemData.key] instanceof Array){
+                        this.formData[this.itemData.key].push(res);
+                    }else{
+                        this.formData[this.itemData.key] = [res];
+                    }
+                }
+             },
 
         }
     }
 </script>
 
-<style lang="scss">
+<style lang="scss" >
     .avatar-uploader .el-upload {
         border: 2px dashed #d9d9d9;
         border-radius: 6px;
@@ -108,9 +129,9 @@
     .avatar-uploader-icon {
         font-size: 28px;
         color: #8c939d;
-        width: 178px;
-        height: 178px;
-        line-height: 178px;
+        width: 148px;
+        height: 148px;
+        line-height: 148px;
         text-align: center;
     }
 
@@ -133,8 +154,8 @@
     }
 
     .avatar {
-        width: 178px;
-        height: 178px;
+        width: 148px;
+        height: 148px;
         display: block;
     }
 </style>

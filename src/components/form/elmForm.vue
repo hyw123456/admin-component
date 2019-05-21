@@ -81,7 +81,8 @@
                 }));
                 // 完成表单控件
                 return (
-                    <el-form key={this.id} ref={this.id} label-width={this.labelWidth} rules={rules} model={this.formData}>
+                    <el-form inline={this.formConfig.inline} key={this.id} ref={this.id} label-width={this.labelWidth} rules={rules} model={this.formData}
+                    size={this.formConfig.size}>
                 {items}
             </el-form>)
             },

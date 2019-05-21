@@ -50,7 +50,8 @@
                 };
                 config.beforeClose = all;
                 this.$msgbox({
-                    title: '',
+                    title: config.title,
+                    customClass:config.customClass,
                     message: (<elm-form ref={this.id} key={this.id} formConfig={formConfig} config={this.config}
                 labelWidth={config.labelWidth || '80px'}
                 on-form-submit={this.submit} on-form-cancel={this.cancel}
